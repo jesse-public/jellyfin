@@ -1,0 +1,21 @@
+version: "3.5"
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    # network_mode: "host" is required only for DLNA, otherwise 'bridge' can be used.
+    # network_mode: "host"
+    ports:
+      - 8096:8096/tcp
+    volumes:
+      - ./volumes/config:/config
+      - ./volumes/cache:/cache
+      # NFS share to media, hosted on NAS. See README for setup instructions.
+      - /mnt/jellyfin-media:/media
+    restart: "unless-stopped"
+    # Optional - alternative address used for autodiscovery
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://example.home
+    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
