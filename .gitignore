@@ -1,0 +1,4 @@
+.env
+reverse-proxy/certs/
+reverse-proxy/nginx.conf
+volumes/

@@ -3,14 +3,14 @@ version: "3.5"
 networks:
   frontend:
     driver: bridge
-  reverse-proxy-backend:
+  jellyfin-reverse-proxy-backend:
     external: true
     # This network can be created with (where x and y are between 1 and 254):
     # docker network create --driver=bridge --internal \
     #   --ip-range=172.x.0.0/24 \
     #   --subnet=172.x.0.0/24 \
     #   --gateway=172.x.0.1 \
-    #   reverse-proxy-backend
+    #   jellyfin-reverse-proxy-backend
     # Then create .env file with contents: BACKEND_IP_ADDRESS=172.x.0.y
 
 services:
@@ -36,7 +36,7 @@ services:
     container_name: jellyfin-reverse-proxy
     networks:
       frontend:
-      reverse-proxy-backend:
+      jellyfin-reverse-proxy-backend:
         ipv4_address: ${BACKEND_IP_ADDRESS}
     restart: unless-stopped
     ports:
