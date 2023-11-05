@@ -24,5 +24,5 @@ Save and reboot VM
 ## TLS Setup
 
 1. Create `reverse-proxy/nginx.conf`
-2. Add certificates to `reverse-proxy/certs/`
+2. Add certificates (ca.crt, jellyfin.home.crt, jellyfin.home.key) to `reverse-proxy/certs/`
 3. Rebuild the reverse-proxy image
