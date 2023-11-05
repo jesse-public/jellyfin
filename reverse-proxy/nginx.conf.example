@@ -3,46 +3,47 @@ server {
   #listen 443 http3 reuseport;
 
   listen 443 ssl http2;
-  server_name myserver.home;
+  server_name jellyfin.home;
 
-  ssl_certificate /etc/nginx/certs/myserver.home.crt;
-  ssl_certificate_key /etc/nginx/private/myserver.home.key;
+  ssl_certificate /etc/nginx/certs/jellyfin.home.crt;
+  ssl_certificate_key /etc/nginx/private/jellyfin.home.key;
 
-  ssl_protocols TLSv1.3;
-  #ssl_session_cache off;
-  #ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
-  #ssl_prefer_server_ciphers on;
+  add_header Strict-Transport-Security "max-age=31536000" always;
+
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  # ssl_protocols TLSv1.3; # VLCKit does not yet work with TLS 1.3
+  ssl_protocols TLSv1.3 TLSv1.2;
+
+  ssl_session_cache off;
+
+  ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+  ssl_prefer_server_ciphers on;
 
   # Quic/HTTP3 not yet present in nginx main
   # Alt-Svc header to negotiate HTTP/3
   #add_header alt-svc 'h3-23=":443"; ma=86400';
 
   location / {
-    proxy_set_header Host $host;
     proxy_pass http://jellyfin:8096;
-    proxy_ssl_protocols TLSv1.3;
-    proxy_redirect off;
-    proxy_cache_bypass $http_upgrade;
+
+    proxy_pass_request_headers on;
+
+    proxy_set_header Host $host;
+
+    #proxy_ssl_protocols TLSv1.3;
+    #proxy_redirect off;
+    #proxy_cache_bypass $http_upgrade;
+
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Protocol $scheme;
     proxy_set_header X-Forwarded-Host $http_host;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
 
     # Disable buffering when the nginx proxy gets very resource heavy upon streaming
     proxy_buffering off;
-  }
-
-  location /socket {
-    proxy_pass http://jellyfin:8096;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Protocol $scheme;
-    proxy_set_header X-Forwarded-Host $http_host;
   }
 }
