@@ -17,15 +17,13 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
-
     networks:
       - jellyfin-reverse-proxy-backend
-
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - JELLYFIN_PublishedServerUrl=https://jellyfin.home
+      PUID: 1000
+      PGID: 1000
+      TZ: Etc/UTC
+      JELLYFIN_PublishedServerUrl: ${PUBLISHED_SERVER_URL}
     volumes:
       - ./volumes/config:/config
       # NFS share to media, hosted on NAS. See README.md for setup instructions.
