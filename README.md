@@ -1,4 +1,6 @@
-# Setup
+# Jellyfin
+
+## Setup
 
 Ensure NAS is bridging network so VMs can connect to it.
 See: https://www.truenas.com/community/threads/vm-cannot-connect-to-host-smb.92805/
@@ -18,3 +20,9 @@ Mount the share at boot:
 2. add `host_ip:/path/to/media    /mnt/jellyfin-media   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
 
 Save and reboot VM
+
+## TLS Setup
+
+1. Create `reverse-proxy/nginx.conf`
+2. Add certificates to `reverse-proxy/certs/`
+3. Rebuild the reverse-proxy image

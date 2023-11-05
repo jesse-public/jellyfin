@@ -1,21 +1,46 @@
 version: "3.5"
+
+networks:
+  frontend:
+    driver: bridge
+  reverse-proxy-backend:
+    external: true
+    # This network can be created with (where x and y are between 1 and 254):
+    # docker network create --driver=bridge --internal \
+    #   --ip-range=172.x.0.0/24 \
+    #   --subnet=172.x.0.0/24 \
+    #   --gateway=172.x.0.1 \
+    #   reverse-proxy-backend
+    # Then create .env file with contents: BACKEND_IP_ADDRESS=172.x.0.y
+
 services:
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
-    # network_mode: "host" is required only for DLNA, otherwise 'bridge' can be used.
-    # network_mode: "host"
+    # network_mode: "host" # Optional - required only for DLNA.
     ports:
       - 8096:8096/tcp
     volumes:
       - ./volumes/config:/config
       - ./volumes/cache:/cache
-      # NFS share to media, hosted on NAS. See README for setup instructions.
+      # NFS share to media, hosted on NAS. See README.md for setup instructions.
       - /mnt/jellyfin-media:/media
     restart: "unless-stopped"
-    # Optional - alternative address used for autodiscovery
     environment:
       - JELLYFIN_PublishedServerUrl=https://example.home
-    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  reverse-proxy:
+    build:
+      context: ./reverse-proxy
+    container_name: jellyfin-reverse-proxy
+    networks:
+      frontend:
+      reverse-proxy-backend:
+        ipv4_address: ${BACKEND_IP_ADDRESS}
+    restart: unless-stopped
+    ports:
+      - 443:443/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro

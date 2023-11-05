@@ -1,0 +1,27 @@
+server {
+  # Quic/HTTP3 not yet present in nginx main
+  #listen 443 http3 reuseport;
+
+  listen 443 ssl http2;
+  server_name myserver.home;
+
+  ssl_certificate /etc/nginx/certs/myserver.home.crt;
+  ssl_certificate_key /etc/nginx/private/myserver.home.key;
+
+  ssl_protocols TLSv1.3;
+  #ssl_session_cache off;
+  #ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+  #ssl_prefer_server_ciphers on;
+
+  # Quic/HTTP3 not yet present in nginx main
+  # Alt-Svc header to negotiate HTTP/3
+  #add_header alt-svc 'h3-23=":443"; ma=86400';
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_pass http://jellyfin:8096;
+    proxy_ssl_protocols TLSv1.3;
+    proxy_redirect off;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
