@@ -22,7 +22,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Etc/UTC
+      TZ: ${TZ}
       JELLYFIN_PublishedServerUrl: ${PUBLISHED_SERVER_URL}
     volumes:
       - ./volumes/config:/config
