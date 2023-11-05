@@ -17,6 +17,8 @@ services:
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
+    networks:
+      - jellyfin-reverse-proxy-backend
     # network_mode: "host" # Optional - required only for DLNA.
     ports:
       - 8096:8096/tcp
