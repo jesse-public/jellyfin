@@ -25,8 +25,8 @@ Update docker service to await the mount before starting:
 2. Add the following to the service file:
 
 ```
-[Service]
-RequiresMountsFor=/mnt/jellyfin-media
+[Unit]
+RequiresMountsFor=/mnt/jellyfin-media/movies /mnt/jellyfin-media/shows
 ```
 
 Save and reboot VM
