@@ -19,6 +19,16 @@ Mount the share at boot:
 1. `sudo nano /etc/fstab`
 2. add `host_ip:/path/to/media    /mnt/jellyfin-media   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
 
+Update docker service to await the mount before starting:
+
+1. `sudo systemctl edit docker.service`
+2. Add the following to the service file:
+
+```
+[Service]
+RequiresMountsFor=/mnt/jellyfin-media
+```
+
 Save and reboot VM
 
 ## TLS Setup
