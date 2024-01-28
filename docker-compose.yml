@@ -22,12 +22,6 @@ services:
     # devices:
     #   - /dev/dri:/dev/dri
 
-    # GPU passthrough: render group id
-    # https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#configure-with-linux-virtualization
-    # This can be found with: $ getent group render | cut -d: -f3
-    # group_add:
-    #   - "105"
-
     networks:
       - jellyfin-reverse-proxy-backend
     environment:
