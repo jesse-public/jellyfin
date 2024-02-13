@@ -2,10 +2,6 @@
 
 ## Setup
 
-Ensure NAS is bridging network so VMs can connect to it.
-See: https://www.truenas.com/community/threads/vm-cannot-connect-to-host-smb.92805/
-Note: VMs must be shut down to assign the bridge IP.
-
 Ensure NAS is sharing media through NFS.
 
 Mount NFS on client:
@@ -19,8 +15,8 @@ Mount NFS on client:
 Mount the share at boot:
 
 1. `sudo nano /etc/fstab`
-1. add `host_ip:/path/to/media    /mnt/jellyfin-media   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
-1. add `host_ip:/path/to/music    /mnt/jellyfin-music   nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
+1. add `host_ip:/path/to/media    /mnt/jellyfin-media   nfs ro,auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
+1. add `host_ip:/path/to/music    /mnt/jellyfin-music   nfs ro,auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
 
 Update docker service to await the mount before starting:
 
