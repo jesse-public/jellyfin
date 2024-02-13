@@ -19,8 +19,8 @@ services:
     container_name: jellyfin
 
     # GPU passthrough: device
-    # devices:
-    #   - /dev/dri:/dev/dri
+    devices:
+      - /dev/dri:/dev/dri
 
     networks:
       - jellyfin-reverse-proxy-backend
@@ -29,12 +29,14 @@ services:
       PGID: 1000
       TZ: ${TZ}
       JELLYFIN_PublishedServerUrl: ${PUBLISHED_SERVER_URL}
+      # Intel ARC GPU opencl
+      DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
     volumes:
       - ./volumes/config:/config
       # NFS share to media, hosted on NAS. See README.md for setup instructions.
-      - /mnt/nas-media/movies:/data/movies
-      - /mnt/nas-media/shows:/data/shows
-      - /mnt/nas-music:/data/music
+      - /mnt/nas-media/movies:/data/movies:ro
+      - /mnt/nas-media/shows:/data/shows:ro
+      - /mnt/nas-music:/data/music:ro
     ports:
       # https://jellyfin.org/docs/general/networking/
       # - 8096:8096 # http web ui
