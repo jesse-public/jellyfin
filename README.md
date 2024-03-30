@@ -2,21 +2,30 @@
 
 ## Setup
 
+### General
+
+Create an `.env` file (see `.env.example`).
+
+Add `ca.crt`, `jellyfin.home.crt` and `jellyfin.home.key` to `volumes/nginx/config/keys`.
+
+Update `volumes/nginx/config/keys/site-confs/default.conf` and `volumes/nginx/config/keys/ssl.conf` with your domain and cert names (if different from above).
+
+### NFS
+
 Ensure NAS is sharing media through NFS.
 
 Mount NFS on client:
 
 1. `sudo apt install nfs-common`
-1. `sudo mkdir -p /mnt/nas-media`
-1. `sudo mkdir -p /mnt/nas-music`
-1. `sudo mount nas_host_ip:/path/to/media /mnt/nas-media`
-1. `sudo mount nas_host_ip:/path/to/music /mnt/nas-music`
+1. `sudo mkdir -p /mnt/nas-media /mnt/nas-music`
+1. `sudo mount nas_ip:/path/to/media /mnt/nas-media`
+1. `sudo mount nas_ip:/path/to/music /mnt/nas-music`
 
 Mount the share at boot:
 
 1. `sudo nano /etc/fstab`
-1. add `host_ip:/path/to/media    /mnt/jellyfin-media   nfs ro,auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
-1. add `host_ip:/path/to/music    /mnt/jellyfin-music   nfs ro,auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0`
+1. add `nas_ip:/path/to/media    /mnt/nas-media   nfs ro,auto,nofail,noatime,nolock,tcp,actimeo=1800 0 0`
+1. add `nas_ip:/path/to/music    /mnt/nas-music   nfs ro,auto,nofail,noatime,nolock,tcp,actimeo=1800 0 0`
 
 Update docker service to await the mount before starting:
 
@@ -25,10 +34,10 @@ Update docker service to await the mount before starting:
 
 ```
 [Unit]
-RequiresMountsFor=/mnt/jellyfin-media/movies /mnt/jellyfin-media/shows /mnt/jellyfin-media/music
+RequiresMountsFor=/mnt/nas-media/movies /mnt/nas-media/shows /mnt/nas-music
 ```
 
-Intel ARC GPU transcoding:
+### Intel ARC GPU transcodin
 
 1. On host, ensure on kernel 6.5+, use backports if needed
 1. On host, if `apt policy intel-opencl-icd` < v 22.xx.xxxxx, `sudo apt install -y intel-opencl-icd`. [More information](https://jellyfin.org/docs/general/administration/hardware-acceleration/intel#linux-setups)
@@ -55,9 +64,3 @@ cd ~/ && \
 References:
 https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#verify-on-linux
 https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#low-power-encoding
-
-## TLS Setup
-
-1. Create `reverse-proxy/nginx.conf`
-1. Add certificates (ca.crt, jellyfin.home.crt, jellyfin.home.key) to `reverse-proxy/certs/`
-1. Initial docker-compose will build the reverse-proxy image. It can be rebuilt if needed
