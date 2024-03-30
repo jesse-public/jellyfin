@@ -1,17 +1,4 @@
-version: "2.1"
-
-networks:
-  frontend:
-    driver: bridge
-  jellyfin-reverse-proxy-backend:
-    external: true
-    # This network can be created with (where x and y are between 1 and 254):
-    # docker network create --driver=bridge \
-    #   --ip-range=172.x.0.0/24 \
-    #   --subnet=172.x.0.0/24 \
-    #   --gateway=172.x.0.1 \
-    #   jellyfin-reverse-proxy-backend
-    # Then create .env file with contents: BACKEND_IP_ADDRESS=172.x.0.y
+version: "3"
 
 services:
   jellyfin:
@@ -22,8 +9,6 @@ services:
     devices:
       - /dev/dri:/dev/dri
 
-    networks:
-      - jellyfin-reverse-proxy-backend
     environment:
       PUID: 1000
       PGID: 1000
@@ -32,7 +17,7 @@ services:
       # Intel ARC GPU opencl
       DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
     volumes:
-      - ./volumes/config:/config
+      - ./volumes/jellyfin/config:/config
       # NFS share to media, hosted on NAS. See README.md for setup instructions.
       - /mnt/nas-media/movies:/data/movies:ro
       - /mnt/nas-media/shows:/data/shows:ro
@@ -41,21 +26,21 @@ services:
       # https://jellyfin.org/docs/general/networking/
       # - 8096:8096 # http web ui
       # - 8920:8920 # https web ui
-      - 7359:7359/udp # client discovery
-      - 1900:1900/udp # service discovery
+      - ${CLIENT_IP}:7359:7359/udp # client discovery
+      - ${CLIENT_IP}:1900:1900/udp # service discovery
     restart: unless-stopped
 
-  reverse-proxy:
-    build:
-      context: ./reverse-proxy
+  nginx:
+    image: lscr.io/linuxserver/nginx:latest
     container_name: jellyfin-reverse-proxy
-    networks:
-      frontend:
-      jellyfin-reverse-proxy-backend:
-        ipv4_address: ${BACKEND_IP_ADDRESS}
-    restart: unless-stopped
-    ports:
-      - 443:443/tcp
+    depends_on:
+      - jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
+      - ./volumes/nginx/config:/config
+    ports:
+      - ${CLIENT_IP}443:443/tcp
+    restart: unless-stopped
