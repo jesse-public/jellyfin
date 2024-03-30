@@ -42,5 +42,5 @@ services:
     volumes:
       - ./volumes/nginx/config:/config
     ports:
-      - ${CLIENT_IP}443:443/tcp
+      - ${CLIENT_IP}:443:443/tcp
     restart: unless-stopped
