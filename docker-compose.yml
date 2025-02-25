@@ -1,12 +1,28 @@
 services:
+  caddy:
+    # Use custom dockerfile to build with required dns module
+    build: ./caddy
+    container_name: caddy
+    depends_on:
+      - jellyfin
+    environment:
+      - CF_API_TOKEN
+      - CF_ZONE_TOKEN
+    volumes:
+      - ./volumes/caddy/conf:/etc/caddy
+      - ./volumes/caddy/site:/srv
+      - ./volumes/caddy/caddy_data:/data
+      - ./volumes/caddy/caddy_config:/config
+    ports:
+      - ${CLIENT_IP}:443:443/tcp
+    restart: unless-stopped
+
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
-
     # GPU passthrough: device
     devices:
       - /dev/dri:/dev/dri
-
     environment:
       PUID: 1000
       PGID: 1000
@@ -28,20 +44,20 @@ services:
       - ${CLIENT_IP}:1900:1900/udp # service discovery
     restart: unless-stopped
 
-  nginx:
-    image: lscr.io/linuxserver/nginx:latest
-    container_name: jellyfin-reverse-proxy
-    depends_on:
-      - jellyfin
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - ./volumes/nginx/config:/config
-    ports:
-      - ${CLIENT_IP}:443:443/tcp
-    restart: unless-stopped
+  # nginx:
+  #   image: lscr.io/linuxserver/nginx:latest
+  #   container_name: jellyfin-reverse-proxy
+  #   depends_on:
+  #     - jellyfin
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./volumes/nginx/config:/config
+  #   ports:
+  #     - ${CLIENT_IP}:443:443/tcp
+  #   restart: unless-stopped
 
   watchtower:
     image: containrrr/watchtower

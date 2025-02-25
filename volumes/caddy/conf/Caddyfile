@@ -1,0 +1,14 @@
+jf.example.com {
+  tls {
+    curves x25519
+    dns cloudflare {
+      api_token {env.CF_API_TOKEN}
+      zone_token {env.CF_ZONE_TOKEN}
+    }
+    # lets encrypt doesn't support ed25519 yet
+    key_type rsa4096
+    protocols tls1.3
+  }
+
+  reverse_proxy jellyfin:8096
+}
