@@ -1,6 +1,5 @@
 jf.example.com {
   tls {
-    curves x25519
     dns cloudflare {
       api_token {env.CF_API_TOKEN}
       zone_token {env.CF_ZONE_TOKEN}
