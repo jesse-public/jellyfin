@@ -6,9 +6,10 @@ jf.example.com {
     }
     # override resolver to allow for validation of dns challenge
     # https://github.com/caddy-dns/cloudflare/issues/28
-    resolvers 1.1.1.1
+    resolvers 1.1.1.1 9.9.9.9
     # increase dns propagation timeout
-    propagation_timeout 20m
+    propagation_timeout 10m
+    propagation_delay 30s
     # decrease ttl of dns challenge TXT entry
     dns_ttl 1m
     # lets encrypt doesn't support ed25519 yet
