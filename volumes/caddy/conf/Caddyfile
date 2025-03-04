@@ -2,11 +2,11 @@ jf.example.com {
   tls {
     dns cloudflare {
       api_token {env.CF_API_TOKEN}
-      # override resolver to allow for validation of dns challenge
-      # https://github.com/caddy-dns/cloudflare/issues/28
-      resolvers 1.1.1.1
       zone_token {env.CF_ZONE_TOKEN}
     }
+    # override resolver to allow for validation of dns challenge
+    # https://github.com/caddy-dns/cloudflare/issues/28
+    resolvers 1.1.1.1
     # lets encrypt doesn't support ed25519 yet
     key_type rsa4096
     # VLCKit does not support TLS 1.3 yet
