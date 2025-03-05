@@ -1,7 +1,0 @@
-.env
-volumes
-!volumes/nginx/config/keys/*.example
-!volumes/nginx/config/keys/*.example
-!volumes/nginx/config/nginx/site-confs/default.conf
-!volumes/nginx/config/nginx/ssl.conf
-!volumes/caddy/conf/Caddyfile

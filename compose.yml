@@ -1,3 +1,9 @@
+secrets:
+  cf_api_token:
+    file: ./secrets/cf_api_token
+  cf_zone_token:
+    file: ./secrets/cf_zone_token
+
 services:
   caddy:
     # Use custom dockerfile to build with required dns module
@@ -5,9 +11,9 @@ services:
     container_name: caddy
     depends_on:
       - jellyfin
-    environment:
-      - CF_API_TOKEN
-      - CF_ZONE_TOKEN
+    secrets:
+      - cf_api_token
+      - cf_zone_token
     volumes:
       - ./volumes/caddy/conf:/etc/caddy
       - ./volumes/caddy/site:/srv
@@ -44,29 +50,3 @@ services:
       - ${CLIENT_IP}:7359:7359/udp # client discovery
       - ${CLIENT_IP}:1900:1900/udp # service discovery
     restart: unless-stopped
-
-  # nginx:
-  #   image: lscr.io/linuxserver/nginx:latest
-  #   container_name: jellyfin-reverse-proxy
-  #   depends_on:
-  #     - jellyfin
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=${TZ}
-  #   volumes:
-  #     - ./volumes/nginx/config:/config
-  #   ports:
-  #     - ${CLIENT_IP}:443:443/tcp
-  #   restart: unless-stopped
-
-  # watchtower:
-  #   image: containrrr/watchtower
-  #   container_name: watchtower
-  #   environment:
-  #     - WATCHTOWER_CLEANUP=true
-  #     - WATCHTOWER_POLL_INTERVAL=3600
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   command: jellyfin nginx
-  #   restart: unless-stopped
